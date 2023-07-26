@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { Fragment, useEffect, useState } from "react"
 import axios from 'axios';
 import add from "./assets/add.png";
 import done from "./assets/done.png";
@@ -8,19 +8,30 @@ function Home() {
     const [description, setDescription] = useState('');
     const [isCompleted, setIsCompleted] = useState('');
     const [deleted, setDeleted] = useState('');
+    const [todo, setTodo] = useState([]);
 
+    useEffect(() => {
+        async function getData() {
+            const data = await axios.get('http://127.0.0.1:4242/');
+            console.log(data);
+            setTodo(data.data);
+        }
+        getData();
+    }, []);
     async function submit(e) {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:4242/', {
+            const data = await axios.post('http://localhost:4242/', {
                 description,
                 isCompleted,
                 deleted
             })
+            setTodo([...todo, data.data[0]]);
         } catch (e) {
             console.log(e);
         }
     }
+
     return (
         <div className="">
             <form action="POST">
@@ -33,16 +44,32 @@ function Home() {
             <div className="flex justify-center m-auto mt-20">
                 <div className="w-3/12 max-w-sm border border-[#00000026] rounded-md md:p-4 mr-32 dark:border-[#00000026]">
                     <h1>TO DO</h1>
-                    <div className="flex bg-[#d9d9d997] rounded-2xl py-2 mt-5">
-                        <h1 className="pl-4 w-10/12">test</h1>
-                        <button type='submit' onClick={submit} onChange={(e) => { setIsCompleted(e.target.value) }}><img src={done} alt="done png" /></button>
-                        <button type='submit' onClick={submit} onChange={(e) => { setDeleted(e.target.value) }}><img src={bin} alt="bin png" /></button>
+                    <div className="">
+                        <ul>
+                            {
+                                todo.map((item) => {
+                                    return (
+                                        <Fragment key={item._id}>
+                                            <li key={item._id} className=" flex bg-[#d9d9d997] rounded-2xl py-2 mt-5 pl-4">
+                                                <span>{item.description}</span>
+                                                <button type='submit' onClick={submit} onChange={(e) => { setIsCompleted(e.target.value) }}><img src={done} alt="done png" /></button>
+                                                <button type='submit' onClick={submit} onChange={(e) => { setDeleted(e.target.value) }}><img src={bin} alt="bin png" /></button>
+                                            </li>
+                                        </Fragment>
+                                    )
+                                })
+                            }
+                        </ul>
                     </div>
                 </div>
                 <div className="w-3/12 max-w-sm border border-[#00000026] rounded-md md:p-4 dark:border-[#00000026]">
                     <h1>COMPLETED</h1>
                     <div className="flex bg-[#d9d9d997] rounded-2xl py-2 mt-5">
-                        <h1 className="pl-4 w-10/12 line-through">test</h1>
+                        <ul>
+                            <li className="pl-4 w-10/12 line-through">
+                                test
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
