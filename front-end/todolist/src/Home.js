@@ -32,6 +32,20 @@ function Home() {
         }
     }
 
+    async function deleteTask(id) {
+        try {
+            await axios.delete(`http://localhost:4242/todo/${id}`);
+            const updatedTodo = todo.filter((item) => item._id !== id);
+            setTodo(updatedTodo);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    function handleDeleteTask(id) {
+        deleteTask(id);
+    }
+
     return (
         <div className="">
             <form action="POST">
@@ -53,7 +67,7 @@ function Home() {
                                             <li key={item._id} className=" flex bg-[#d9d9d997] rounded-2xl py-2 mt-5 pl-4">
                                                 <span>{item.description}</span>
                                                 <button type='submit' onClick={submit} onChange={(e) => { setIsCompleted(e.target.value) }}><img src={done} alt="done png" /></button>
-                                                <button type='submit' onClick={submit} onChange={(e) => { setDeleted(e.target.value) }}><img src={bin} alt="bin png" /></button>
+                                                <button type='submit' onClick={() => handleDeleteTask(item._id)}><img src={bin} alt="bin png" /></button>
                                             </li>
                                         </Fragment>
                                     )
