@@ -8,15 +8,15 @@ mongoose.connect('mongodb://127.0.0.1:27042/task', {
 const taskSchema = new Schema({
     description: {
         type: String,
-        
+
     },
     isCompleted: {
         type: String,
-        
+
     },
     deleted: {
         type: String,
-        
+
     }
 })
 
