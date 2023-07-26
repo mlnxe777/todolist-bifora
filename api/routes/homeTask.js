@@ -22,5 +22,17 @@ router.delete("/todo/:id", async (req, res, next) => {
       next({ status: 400, message: "failed to delete the task" })
    }
 })
+router.put("/todo/:id", async (req, res, next) => {
+   try {
+     const updatedTask = await taskCollection.findByIdAndUpdate(
+       req.params.id,
+       { isCompleted: true },
+       { new: true }
+     );
+     res.json(updatedTask);
+   } catch (err) {
+     next({ status: 400, message: "Failed to update the task" });
+   }
+ });
 
 module.exports = router;
