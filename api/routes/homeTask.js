@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
 router.delete("/todo/:id", async (req, res, next) => {
    try {
       await taskCollection.findByIdAndRemove(req.params.id)
-      return success(res, "task deleted")
+      res.send("task deleted")
    } catch (err) {
       next({ status: 400, message: "failed to delete the task" })
    }

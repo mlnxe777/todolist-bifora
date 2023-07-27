@@ -34,18 +34,23 @@ function Home() {
         }
     }
 
-    async function deleteTask(id) {
+    async function deleteTask(curritem) {
         try {
-            await axios.delete(`http://localhost:4242/todo/${id}`);
-            const updatedTodo = todo.filter((item) => item._id !== id);
-            setTodo(updatedTodo);
+            await axios.delete(`http://localhost:4242/todo/${curritem._id}`);
+            if (curritem.isCompleted === "true") {
+                const updatedTodo = (completedTasks) => completedTasks.filter((item) => item._id !== curritem._id);
+                setCompletedTasks(updatedTodo);
+            } else {
+                const updatedTodo = (todo) => todo.filter((item) => item._id !== curritem._id);
+                setTodo(updatedTodo);
+            }
         } catch (e) {
             console.log(e);
         }
     }
 
-    function handleDeleteTask(id) {
-        deleteTask(id);
+    function handleDeleteTask(item) {
+        deleteTask(item);
     }
 
     async function markTaskAsDone(id) {
@@ -73,7 +78,7 @@ function Home() {
             setCompletedTasks(completed);
         }
         getData();
-    }, []);
+    }, [todo, completedTasks]);
     return (
         <div className="">
             <form action="POST">
@@ -101,7 +106,7 @@ function Home() {
                                                         </button>
                                                     ) : null
                                                 }
-                                                <button type='submit' onClick={() => handleDeleteTask(item._id)} className="ml-2"><img src={bin} alt="bin png" /></button>
+                                                <button type='submit' onClick={() => handleDeleteTask(item)} className="ml-2"><img src={bin} alt="bin png" /></button>
                                             </li>
                                         </Fragment>
                                     )
@@ -114,12 +119,14 @@ function Home() {
                     <h1 className="text-slate-400 dark:text-slate-400 font-semibold">COMPLETED</h1>
                     <div>
                         <ul>
-                            {completedTasks.map((item) => (
-                                <li key={item._id} className="flex bg-slate-400 rounded-2xl py-2 mt-5 line-through pl-4">
-                                    <span>{item.description}</span>
-                                    <button type='submit' onClick={() => handleDeleteTask(item._id)} className="ml-5"><img src={bin} alt="bin png" /></button>
-                                </li>
-                            ))}
+                            {completedTasks.map((item) => {
+                                return (
+                                    <li key={item._id} className="flex bg-slate-400 rounded-2xl py-2 mt-5 line-through pl-4">
+                                        <span>{item.description}</span>
+                                        <button type='submit' onClick={() => handleDeleteTask(item)} className="ml-5"><img src={bin} alt="bin png" /></button>
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </div>
                 </div>
